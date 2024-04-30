@@ -37,21 +37,52 @@ async function index(req, res) {
   }
 }
 
-function update(req, res) {
-  res.send({
-    msg: "Data updated",
-    body: req.body,
-  });
+async function update(req, res) {
+  try {
+    await prisma.tasks.update({
+      data: req.body,
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    res.send({
+      msg: "Data updated",
+      body: req.body,
+      params: req.params,
+    });
+  } catch (error) {
+    res.status(500).send({ error });
+  }
 }
 
-function destroy(req, res) {
-  res.send({
-    msg: "Data deleted.",
-  });
+async function destroy(req, res) {
+  try {
+    await prisma.tasks.delete({
+      where: {
+        id: req.params.id,
+      },
+    });
+    res.send({
+      msg: "Data deleted.",
+    });
+  } catch (error) {
+    res.status(500).send({ error });
+  }
 }
 
-function show(req, res) {
-  res.send({});
+async function show(req, res) {
+  try {
+    let response = await prisma.tasks.findFirst({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    res.send(response);
+  } catch (error) {
+    res.status(500).send({ error });
+  }
 }
 
 module.exports = {
